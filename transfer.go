@@ -17,10 +17,8 @@ type ListTransferRequest struct {
 	// (Optional) Limit list of transfers to this profile_id. By default, it retrieves transfers across all of the user's profiles
 	ProfileID string `json:"profile_id"`
 
-	PaginationParams
+	Pagination PaginationParams
 }
-
-type ListTransferResponse struct {}
 
 func (c *Client) CreateTransfer(newTransfer *Transfer) (Transfer, error) {
 	var savedTransfer Transfer
@@ -42,12 +40,18 @@ func (c *Client) ListTransfers(request ListTransferRequest) ([]Transfer, error) 
 	return savedTransfers, err
 }
 
-func (c *Client) ListWithdrawals(profileID string, pagination PaginationParams) ([]Transfer, error) {
+func (c *Client) ListWithdrawals(profileID string, pagination *PaginationParams) ([]Transfer, error) {
+
+	if pagination == nil {
+		pagination = &PaginationParams{}
+	}
+
 	var savedTransfers []Transfer
+
 	request := ListTransferRequest{
 		Type:             "withdraw",
 		ProfileID:        profileID,
-		PaginationParams: pagination,
+		Pagination: *pagination,
 	}
 
 	url := fmt.Sprintf("/transfers")
@@ -55,12 +59,17 @@ func (c *Client) ListWithdrawals(profileID string, pagination PaginationParams) 
 	return savedTransfers, err
 }
 
-func (c *Client) ListDeposits(profileID string, pagination PaginationParams) ([]Transfer, error) {
+func (c *Client) ListDeposits(profileID string, pagination *PaginationParams) ([]Transfer, error) {
+
+	if pagination == nil {
+		pagination = &PaginationParams{}
+	}
+
 	var savedTransfers []Transfer
 	request := ListTransferRequest{
 		Type:             "deposit",
 		ProfileID:        profileID,
-		PaginationParams: pagination,
+		Pagination: *pagination,
 	}
 
 	url := fmt.Sprintf("/transfers")
